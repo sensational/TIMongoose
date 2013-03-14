@@ -276,8 +276,8 @@ typedef struct ssl_ctx_st SSL_CTX;
 #define	SSL_library_init() (* (int (*)(void)) ssl_sw[10].ptr)()
 #define	SSL_CTX_use_PrivateKey_file(x,y,z)	(* (int (*)(SSL_CTX *, \
 		const char *, int)) ssl_sw[11].ptr)((x), (y), (z))
-#define	SSL_CTX_use_certificate_file(x,y,z)	(* (int (*)(SSL_CTX *, \
-		const char *, int)) ssl_sw[12].ptr)((x), (y), (z))
+#define	SSL_CTX_use_certificate_chain_file(x,y)	(* (int (*)(SSL_CTX *, \
+		const char *)) ssl_sw[12].ptr)((x), (y))
 #define SSL_CTX_set_default_passwd_cb(x,y) \
 	(* (void (*)(SSL_CTX *, mg_spcb_t)) ssl_sw[13].ptr)((x),(y))
 #define SSL_CTX_free(x) (* (void (*)(SSL_CTX *)) ssl_sw[14].ptr)(x)
@@ -308,7 +308,7 @@ static struct ssl_func	ssl_sw[] = {
 	{"SSLv23_server_method",	NULL},
 	{"SSL_library_init",		NULL},
 	{"SSL_CTX_use_PrivateKey_file",	NULL},
-	{"SSL_CTX_use_certificate_file",NULL},
+	{"SSL_CTX_use_certificate_chain_file",NULL},
 	{"SSL_CTX_set_default_passwd_cb",NULL},
 	{"SSL_CTX_free",		NULL},
 	{NULL,				NULL}
@@ -4046,8 +4046,8 @@ set_ssl_option(struct mg_context *ctx, const char *pem)
 	else if (ctx->ssl_password_callback != NULL)
 		SSL_CTX_set_default_passwd_cb(CTX, ctx->ssl_password_callback);
 
-	if (CTX != NULL && SSL_CTX_use_certificate_file(
-	    CTX, pem, SSL_FILETYPE_PEM) == 0)
+	if (CTX != NULL && SSL_CTX_use_certificate_chain_file(
+	    CTX, pem) == 0)
 		cry(fc(ctx), "%s: cannot open %s", __func__, pem);
 	else if (CTX != NULL && SSL_CTX_use_PrivateKey_file(
 	    CTX, pem, SSL_FILETYPE_PEM) == 0)
